@@ -1,0 +1,32 @@
+name: Day 1 - TypeScript Coding Practices
+on:
+  push:
+    paths:
+      - 'Day 1/**'
+      - '.github/workflows/day1.yml'
+  pull_request:
+    paths:
+      - 'Day 1/**'
+      - '.github/workflows/day1.yml'
+  workflow_dispatch:
+
+permissions: 
+  contents: read
+  pull-requests: write
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ./Day 1
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+          cache: 'npm'
+          cache-dependency-path: Day 1/package-lock.json
+      - run: npm install
+      - name: Run checks
+        run: npm run check
