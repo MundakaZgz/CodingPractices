@@ -1,0 +1,18 @@
+{
+  "name": "day-1",
+  "version": "1.0.0",
+  "description": "Day 1 of coding practices",
+  "license": "MIT",
+  "author": "Jose A. Herrero",
+  "type": "module",
+  "main": "index.js",
+  "scripts": {
+    "start": "npx tsc && node ./dist/index.js",
+    "test": "vitest"
+  },
+  "devDependencies": {
+    "@types/node": "^22.20.2",
+    "typescript": "^7.0.2",
+    "vitest": "^5.0.0"
+  }
+}
