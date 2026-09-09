@@ -43,4 +43,15 @@ describe('deduplicate', () => {
       { id: 'a', timestamp: 1000 },
     ]);
   });
+
+  it('keeps only one event when timestamps are the same', () => {
+    const events = [
+      { id: 'a', timestamp: 0 },
+      { id: 'a', timestamp: 0 }
+    ];
+
+    expect(deduplicate(events, 1000)).toEqual([
+      { id: 'a', timestamp: 0 }
+    ]);
+  });
 });

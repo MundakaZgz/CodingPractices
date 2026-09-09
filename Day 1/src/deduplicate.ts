@@ -4,7 +4,7 @@ type Event = {
 }
 
 function deduplicate(events: Event[], windowMS: number) : Event[] {
-    let lastAcceptedById = new Map<string, number>()
+    const lastAcceptedById = new Map<string, number>()
     const result: Event[] = [];
 
     for(const event of events) {

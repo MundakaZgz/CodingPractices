@@ -1,4 +1,4 @@
-import deduplicate from './deduplicate'
+import deduplicate from './deduplicate.js'
 
 function main() {
  const events = [
