@@ -7,6 +7,7 @@ class ApiError(Exception):
 def fetch_with_retry(request, sleep, max_attempts=3, base_delay=0.5):
     attempts = 0
     delay_multiplier = 1
+    controlled_status_codes = list(range(500, 599)) + [429]
 
     if max_attempts < 1 or base_delay < 0:
         raise ValueError("Invalid parameters: max_attempts must be >= 1 and base_delay must be >= 0")
@@ -15,13 +16,13 @@ def fetch_with_retry(request, sleep, max_attempts=3, base_delay=0.5):
         try:
             return request()
         except ApiError as e:
-            if e.status_code in {500, 502, 503, 504, 429}:
+            if e.status_code in controlled_status_codes:
                 attempts += 1
                 if attempts == max_attempts:
-                    raise ApiError(e.status_code)
+                    raise 
                 sleep(base_delay * delay_multiplier)
                 delay_multiplier *= 2
             else:
-                raise ApiError(e.status_code)
+                raise 
     # If we exit the loop without returning, it means all attempts failed
     raise ApiError(500)
