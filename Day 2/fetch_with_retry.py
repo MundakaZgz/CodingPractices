@@ -24,5 +24,4 @@ def fetch_with_retry(request, sleep, max_attempts=3, base_delay=0.5):
                 delay_multiplier *= 2
             else:
                 raise 
-    # If we exit the loop without returning, it means all attempts failed
-    raise ApiError(500)
+  
