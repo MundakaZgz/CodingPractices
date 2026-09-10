@@ -134,6 +134,29 @@ def test_base_delay_zero_retries_without_wait_time():
     assert sleep_calls == [0]
 
 
+@pytest.mark.parametrize("status_code", [429, *range(500, 600)])
+def test_all_retryable_status_codes_are_retried(status_code):
+    responses = [ApiError(status_code), "ok"]
+    request_calls = []
+    sleep_calls = []
+
+    def request():
+        request_calls.append("called")
+        value = responses.pop(0)
+        if isinstance(value, Exception):
+            raise value
+        return value
+
+    def sleep(seconds):
+        sleep_calls.append(seconds)
+
+    result = fetch_with_retry(request, sleep, max_attempts=2, base_delay=0.5)
+
+    assert result == "ok"
+    assert len(request_calls) == 2
+    assert sleep_calls == [0.5]
+
+
 @pytest.mark.parametrize(
     "max_attempts,base_delay",
     [
