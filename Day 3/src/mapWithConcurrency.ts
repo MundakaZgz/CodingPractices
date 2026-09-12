@@ -32,9 +32,16 @@ function mapWithConcurrency<T, R>(items: readonly T[], limit: number, process: (
                 activeCount += 1;
 
                 let task: Promise<R>;
+                const currentItem = items[currentIndex];
 
                 try {
-                    task = Promise.resolve(process(items[currentIndex], currentIndex));
+                    if (currentItem === undefined) {
+                        results[currentIndex] = { status: 'rejected', reason: new Error('Item is undefined') };
+                        settleCurrent();
+                        continue;
+                    }
+
+                    task = Promise.resolve(process(currentItem, currentIndex));
                 } catch (error) {
                     results[currentIndex] = { status: 'rejected', reason: error };
                     settleCurrent();
