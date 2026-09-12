@@ -3,7 +3,7 @@ function mapWithConcurrency<T, R>(items: readonly T[], limit: number, process: (
         return Promise.reject(new RangeError('Limit must be a positive integer'));
     }
 
-    if (items.filter(item => item !== undefined).length === 0) {
+    if (items.length === 0) {
         return Promise.resolve([]);
     }
 
@@ -32,19 +32,18 @@ function mapWithConcurrency<T, R>(items: readonly T[], limit: number, process: (
                 activeCount += 1;
 
                 let task: Promise<R>;
-                const currentItem = items[currentIndex];
+                const currentItem = items[currentIndex]!;
 
                 try {
-                    if (currentItem === undefined) {
-                        results[currentIndex] = { status: 'rejected', reason: new Error('Item is undefined') };
-                        settleCurrent();
-                        continue;
-                    }
-
                     task = Promise.resolve(process(currentItem, currentIndex));
                 } catch (error) {
                     results[currentIndex] = { status: 'rejected', reason: error };
-                    settleCurrent();
+                    activeCount -= 1;
+                    settledCount += 1;
+                    if (settledCount === items.length) {
+                        resolve(results);
+                        return;
+                    }
                     continue;
                 }
 
