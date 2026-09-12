@@ -3,7 +3,7 @@ function mapWithConcurrency<T, R>(items: readonly T[], limit: number, process: (
         return Promise.reject(new RangeError('Limit must be a positive integer'));
     }
 
-    if (items.length === 0) {
+    if (items.filter(item => item !== undefined).length === 0) {
         return Promise.resolve([]);
     }
 
