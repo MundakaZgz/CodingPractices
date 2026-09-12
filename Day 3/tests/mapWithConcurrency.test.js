@@ -280,10 +280,17 @@ describe('mapWithConcurrency', () => {
 
 	it('handles 20000 synchronous executions with limit 1 without overflowing the stack', async () => {
 		const mapWithConcurrency = await loadMapWithConcurrency();
-		const items = Array.from({ length: 20000 }, (_, index) => index);
-		const process = vi.fn((item) => Promise.resolve(item * 2));
+		const items = Array.from({ length: 20000 }, (_, i) => i);
+		const error = new Error("sync");
+		const process = vi.fn(() => { throw error; });
 
-		await expect(mapWithConcurrency(items, 1, process)).resolves.toHaveLength(20000);
+		const results = await mapWithConcurrency(items, 1, process);
+
 		expect(process).toHaveBeenCalledTimes(20000);
+		expect(results).toHaveLength(20000);
+		for (const result of results) {
+		expect(result.status).toBe("rejected");
+		expect(result.reason).toBe(error);
+		}
 	});
 });
