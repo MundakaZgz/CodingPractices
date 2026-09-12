@@ -54,12 +54,14 @@ describe('mapWithConcurrency', () => {
 		expect(process).not.toHaveBeenCalled();
 	});
 
-	it('rejects when items contains undefined', async () => {
+	it('resolves when items contains undefined', async () => {
 		const mapWithConcurrency = await loadMapWithConcurrency();
 		const process = vi.fn();
 
-		await expect(mapWithConcurrency([undefined], 1, process)).rejects.toBeInstanceOf(TypeError);
-		expect(process).not.toHaveBeenCalled();
+		await expect(mapWithConcurrency([undefined], 1, process)).resolves.toEqual([
+			{ status: 'fulfilled', value: undefined },
+		]);
+		expect(process).toHaveBeenCalled();
 	});
 
 	it('runs sequentially when the limit is 1', async () => {
