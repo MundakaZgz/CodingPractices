@@ -58,6 +58,14 @@ def test_single_request_capacity():
     assert limiter.allow(3) is True
 
 
+def test_single_capacity_boundary_timing():
+    limiter = SlidingWindowRateLimiter(max_requests=1, window_seconds=10)
+
+    assert limiter.allow(0) is True
+    assert limiter.allow(9.999999) is False
+    assert limiter.allow(10) is True
+
+
 @pytest.mark.parametrize(
     "max_requests, window_seconds",
     [
