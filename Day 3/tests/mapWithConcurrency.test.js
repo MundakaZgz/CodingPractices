@@ -54,6 +54,14 @@ describe('mapWithConcurrency', () => {
 		expect(process).not.toHaveBeenCalled();
 	});
 
+	it('rejects when items contains undefined', async () => {
+		const mapWithConcurrency = await loadMapWithConcurrency();
+		const process = vi.fn();
+
+		await expect(mapWithConcurrency([undefined], 1, process)).rejects.toBeInstanceOf(TypeError);
+		expect(process).not.toHaveBeenCalled();
+	});
+
 	it('runs sequentially when the limit is 1', async () => {
 		const mapWithConcurrency = await loadMapWithConcurrency();
 		const items = ['a', 'b', 'c'];
@@ -266,5 +274,14 @@ describe('mapWithConcurrency', () => {
 			{ status: 'fulfilled', value: 'b-ready' },
 			{ status: 'fulfilled', value: 'c-ready' },
 		]);
+	});
+
+	it('handles 20000 synchronous executions with limit 1 without overflowing the stack', async () => {
+		const mapWithConcurrency = await loadMapWithConcurrency();
+		const items = Array.from({ length: 20000 }, (_, index) => index);
+		const process = vi.fn((item) => Promise.resolve(item * 2));
+
+		await expect(mapWithConcurrency(items, 1, process)).resolves.toHaveLength(20000);
+		expect(process).toHaveBeenCalledTimes(20000);
 	});
 });

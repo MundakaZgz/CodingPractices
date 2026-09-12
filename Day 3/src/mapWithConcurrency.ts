@@ -3,6 +3,12 @@ function mapWithConcurrency<T, R>(items: readonly T[], limit: number, process: (
         return Promise.reject(new RangeError('Limit must be a positive integer'));
     }
 
+    for (const item of items) {
+        if (item === undefined) {
+            return Promise.reject(new TypeError('Items must not contain undefined'));
+        }
+    }
+
     if (items.length === 0) {
         return Promise.resolve([]);
     }
